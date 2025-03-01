@@ -1,0 +1,27 @@
+# TCP Multi Configuration
+
+# Server settings
+server:
+  host: "0.0.0.0"
+  port: 8080
+
+# Connection settings
+connection:
+  buffer_size: 4096
+  keep_alive: true
+  keep_alive_period: 30s
+  
+# Logging settings
+logging:
+  level: "info"  # debug, info, warn, error
+  format: "json"  # text, json
+  output: "stdout"  # stdout, file
+  # file_path: ""  # Optional: only used when output is "file"
+
+# Proxy settings
+proxy:
+  backends:
+    - "127.0.0.1:8081"
+    - "127.0.0.1:8082"
+    - "127.0.0.1:8083"
+  max_conns_per_backend: 90
