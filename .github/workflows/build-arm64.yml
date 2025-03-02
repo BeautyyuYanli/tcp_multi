@@ -1,0 +1,52 @@
+name: Build ARM64
+
+on:
+  workflow_dispatch:
+    inputs:
+      program:
+        description: 'Program name to build'
+        required: true
+        default: ''
+
+jobs:
+  build:
+    runs-on: ubuntu-latest-arm64
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+          cache: true
+
+      - name: Get program name from input or use default
+        id: get-program
+        run: |
+          if [ -n "${{ github.event.inputs.program }}" ]; then
+            echo "PROGRAM=${{ github.event.inputs.program }}" >> $GITHUB_ENV
+          else
+            # Try to detect program from directory structure
+            PROGRAMS=$(ls -d cmd/* 2>/dev/null | sed 's|cmd/||')
+            if [ -z "$PROGRAMS" ]; then
+              echo "::error::No program found in cmd/ directory and no program specified"
+              exit 1
+            elif [ $(echo "$PROGRAMS" | wc -l) -eq 1 ]; then
+              echo "PROGRAM=$PROGRAMS" >> $GITHUB_ENV
+              echo "Detected program: $PROGRAMS"
+            else
+              echo "::error::Multiple programs found in cmd/ directory. Please specify one using workflow_dispatch"
+              echo "Available programs: $PROGRAMS"
+              exit 1
+            fi
+          fi
+
+      - name: Build
+        run: make build ${{ env.PROGRAM }}
+
+      - name: Upload ARM64 binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.PROGRAM }}-arm64
+          path: bin/${{ env.PROGRAM }}
+          retention-days: 7 
