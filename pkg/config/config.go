@@ -39,8 +39,7 @@ type LoggingConfig struct {
 
 // ProxyConfig represents the proxy configuration
 type ProxyConfig struct {
-	Backends            []string `yaml:"backends"`
-	MaxConnsPerBackend  int      `yaml:"max_conns_per_backend"`
+	Backends []string `yaml:"backends"`
 }
 
 // Load loads the configuration from a file

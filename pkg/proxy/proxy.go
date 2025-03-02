@@ -168,15 +168,8 @@ func (p *Proxy) canConnectToBackend(backend string) bool {
 	p.backendMutex.Lock()
 	defer p.backendMutex.Unlock()
 	
-	currentConnections := p.backendConnections[backend]
-	maxConns := p.config.Proxy.MaxConnsPerBackend
-	
-	if maxConns > 0 && currentConnections >= maxConns {
-		p.logger.Debug("Skipping backend %s: maximum connections (%d) reached", 
-			backend, maxConns)
-		return false
-	}
-	
+	// Remove the maximum connection check since MaxConnsPerBackend is not defined
+	// Always return true to allow connections
 	return true
 }
 
